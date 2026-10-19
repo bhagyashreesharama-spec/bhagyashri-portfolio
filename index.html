@@ -1,0 +1,809 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08060e">
+  <title>Bhagyashri Sharma | Creative Universe</title>
+  <meta name="description" content="Explore the creative universe of Bhagyashri Sharma — AI content, visual design, websites and founder projects.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #08060e;
+      --panel: #120d1d;
+      --violet: #a66bff;
+      --pink: #d5a1ff;
+      --white: #f7f2ff;
+      --muted: #aaa0bb;
+      --line: rgba(190, 140, 255, .2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 85px; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: "DM Sans", sans-serif;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      transition: opacity .7s, visibility .7s;
+    }
+    #loader.hide { opacity: 0; visibility: hidden; }
+    .loader-name {
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      letter-spacing: .16em;
+      animation: pulse 1s infinite alternate;
+    }
+
+    #stars {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -2;
+    }
+    .ambient {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: #6422ba;
+      filter: blur(140px);
+      opacity: .17;
+      pointer-events: none;
+      z-index: -1;
+      animation: float 12s ease-in-out infinite alternate;
+    }
+    .ambient.one { top: 10%; left: -220px; }
+    .ambient.two {
+      right: -240px;
+      top: 55%;
+      background: #9a38ff;
+      animation-delay: -5s;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 21px 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      transition: background .3s, border-color .3s;
+    }
+    .topbar.scrolled {
+      background: rgba(8, 6, 14, .88);
+      backdrop-filter: blur(18px);
+      border-color: var(--line);
+    }
+    .brand {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+    }
+    .brand span { color: var(--violet); }
+    nav { display: flex; gap: 26px; align-items: center; }
+    nav a {
+      color: var(--muted);
+      font-size: .83rem;
+      transition: color .3s;
+    }
+    nav a:hover { color: var(--pink); }
+    .menu-btn {
+      display: none;
+      color: white;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel);
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .wrap { width: min(1100px, 86%); margin: auto; }
+    section { padding: 110px 0; position: relative; }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 130px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      align-items: center;
+      gap: 50px;
+    }
+    .eyebrow {
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: .19em;
+      font-size: .73rem;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(3.1rem, 7.6vw, 6.6rem);
+      line-height: .98;
+      letter-spacing: -.065em;
+      font-weight: 600;
+    }
+    .gradient {
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-weight: 500;
+      background: linear-gradient(100deg, #fff, #c6a0ff, #8e4bff, #fff);
+      background-size: 250% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 7s linear infinite;
+    }
+    .hero-copy {
+      max-width: 500px;
+      margin-top: 27px;
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: .97rem;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 30px; }
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      padding: 13px 20px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      font-size: .85rem;
+      transition: transform .3s, box-shadow .3s, background .3s;
+    }
+    .btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 30px #8e4bff25;
+    }
+    .btn.primary {
+      color: #10081b;
+      background: linear-gradient(110deg, #d6b5ff, #9860ff);
+      border: 0;
+      font-weight: 700;
+    }
+
+    .portrait-wrap {
+      position: relative;
+      width: min(100%, 340px);
+      margin: auto;
+      animation: portraitFloat 6s ease-in-out infinite;
+    }
+    .portrait {
+      aspect-ratio: 4 / 5;
+      border-radius: 180px 180px 20px 20px;
+      border: 1px solid #b783ff65;
+      background:
+        radial-gradient(ellipse at 50% 30%, #61318a 0%, #251338 40%, #100a19 75%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 90px #8b40ff20, inset 0 0 45px #a66bff12;
+    }
+    .portrait img {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+      object-position: center;
+    }
+    .portrait-placeholder { text-align: center; padding: 20px; }
+    .portrait-placeholder .symbol { font-size: 4rem; color: #c49aff; }
+    .portrait-placeholder p { color: var(--muted); font-size: .8rem; margin-top: 12px; }
+    .portrait-label {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      right: 18px;
+      padding: 14px;
+      border: 1px solid #ffffff20;
+      background: #0b0716c9;
+      backdrop-filter: blur(12px);
+      border-radius: 10px;
+    }
+    .portrait-label strong { display: block; font-size: 1.05rem; }
+    .portrait-label span { color: var(--pink); font-size: .76rem; }
+    .orbit {
+      position: absolute;
+      inset: -23px;
+      border: 1px solid #a66bff4a;
+      border-radius: 50%;
+      animation: spin 22s linear infinite;
+      pointer-events: none;
+    }
+    .orbit::before {
+      content: "";
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      top: 17%;
+      left: 9%;
+      background: #d5a1ff;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #b66cff;
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: .7rem;
+      letter-spacing: .2em;
+      animation: bob 2s infinite;
+    }
+
+    .section-label {
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      font-size: .72rem;
+      margin-bottom: 17px;
+    }
+    h2 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 1.12;
+      letter-spacing: -.045em;
+      margin-bottom: 22px;
+    }
+    .section-copy { color: var(--muted); line-height: 1.9; max-width: 720px; }
+    .about-grid {
+      display: grid;
+      grid-template-columns: .7fr 1.3fr;
+      gap: 55px;
+      align-items: start;
+    }
+    .identity-card {
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(145deg, #191023, #0e0b14);
+    }
+    .identity-card h3 { font-size: 1.2rem; margin-bottom: 18px; }
+    .identity-card p { color: var(--muted); margin: 12px 0; font-size: .87rem; }
+    .identity-card strong { color: var(--white); }
+
+    .skills-grid, .brand-grid, .project-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 17px;
+      margin-top: 35px;
+    }
+    .card {
+      background: linear-gradient(145deg, #171020, #0d0b12);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .35s, border-color .35s, box-shadow .35s;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      top: -100px;
+      right: -100px;
+      background: #8b40ff;
+      filter: blur(85px);
+      opacity: 0;
+      transition: opacity .4s;
+    }
+    .card:hover {
+      transform: translateY(-7px);
+      border-color: #b78aff7a;
+      box-shadow: 0 15px 45px #0005;
+    }
+    .card:hover::before { opacity: .3; }
+    .card-icon { font-size: 1.7rem; margin-bottom: 18px; }
+    .card h3 { font-size: 1.12rem; margin-bottom: 11px; position: relative; }
+    .card p { color: var(--muted); font-size: .87rem; line-height: 1.8; position: relative; }
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+    .tag {
+      color: #d7baff;
+      background: #8c4cfa16;
+      border: 1px solid #8c4cfa32;
+      border-radius: 30px;
+      padding: 6px 10px;
+      font-size: .7rem;
+    }
+    .text-link { display: inline-block; margin-top: 18px; color: var(--pink); font-size: .85rem; }
+    .text-link:hover { text-decoration: underline; }
+
+    .founder-tag {
+      color: var(--pink);
+      font-size: .7rem;
+      letter-spacing: .16em;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .brand-mark {
+      font-family: "Playfair Display", serif;
+      font-size: 2.4rem;
+      color: #d3b3ff;
+      margin-bottom: 14px;
+    }
+    .brand-card { min-height: 260px; display: flex; flex-direction: column; align-items: flex-start; }
+    .brand-card .text-link { margin-top: auto; padding-top: 20px; }
+    .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .project-card { min-height: 210px; display: flex; flex-direction: column; }
+    .project-card .text-link { margin-top: auto; padding-top: 18px; }
+
+    .timeline { margin-top: 35px; border-left: 1px solid #8050c3; padding-left: 28px; }
+    .timeline-item { position: relative; margin-bottom: 28px; }
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      background: var(--violet);
+      border-radius: 50%;
+      left: -33px;
+      top: 7px;
+      box-shadow: 0 0 15px #a66bff;
+    }
+    .timeline-item h3 { margin-bottom: 8px; font-size: 1rem; }
+    .timeline-item p { color: var(--muted); font-size: .87rem; line-height: 1.8; }
+    .contact-box {
+      text-align: center;
+      padding: 60px 25px;
+      border-radius: 20px;
+      border: 1px solid #a66bff35;
+      background: radial-gradient(ellipse at 50% 0%, #622ba42c, transparent 65%), #100b18;
+    }
+    .contact-box h2 { margin-bottom: 15px; }
+    .contact-box .section-copy { margin: auto; }
+    footer {
+      padding: 28px 7%;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: .12s; }
+    .delay-2 { transition-delay: .24s; }
+    .delay-3 { transition-delay: .36s; }
+
+    @keyframes shimmer { to { background-position: 250% center; } }
+    @keyframes float { to { transform: translate(80px, 70px) scale(1.2); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes portraitFloat { 50% { transform: translateY(-10px); } }
+    @keyframes bob { 50% { margin-top: 10px; } }
+    @keyframes pulse { to { opacity: .45; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+    @media (max-width: 760px) {
+      .topbar { padding: 18px 6%; }
+      .menu-btn { display: block; }
+      nav {
+        display: none;
+        position: absolute;
+        top: 68px;
+        left: 5%;
+        right: 5%;
+        background: #100b19;
+        border: 1px solid var(--line);
+        padding: 22px;
+        border-radius: 12px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+      }
+      nav.open { display: flex; }
+      nav a { font-size: .95rem; }
+      .wrap { width: 88%; }
+      section { padding: 80px 0; }
+      .hero { min-height: auto; padding-top: 145px; padding-bottom: 95px; }
+      .hero-grid, .about-grid { grid-template-columns: 1fr; gap: 45px; }
+      .hero h1 { font-size: clamp(3rem, 13vw, 5rem); }
+      .portrait-wrap { width: min(76%, 300px); margin-top: 12px; }
+      .scroll-hint { display: none; }
+      .skills-grid, .brand-grid, .project-grid { grid-template-columns: 1fr; }
+      .card { padding: 23px; }
+      .contact-box { padding: 45px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loader"><div class="loader-name gradient">BHAGYASHRI</div></div>
+  <canvas id="stars"></canvas>
+  <div class="ambient one"></div>
+  <div class="ambient two"></div>
+
+  <header class="topbar" id="topbar">
+    <a class="brand" href="#home">BHAGYASHRI<span>®</span></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <nav id="nav">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#brands">My Brands</a>
+      <a href="#work">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow reveal">Welcome to my creative universe</p>
+          <h1 class="reveal delay-1">I CREATE<br><span class="gradient">Beyond Ordinary.</span></h1>
+          <p class="hero-copy reveal delay-2">
+            I turn ideas into digital experiences through AI-powered creativity,
+            visual storytelling, design and websites. This is my journey,
+            my imagination and the work I'm building.
+          </p>
+          <div class="actions reveal delay-3">
+            <a class="btn primary" href="#work">Explore My Work ↗</a>
+            <a class="btn" href="#about">Discover My Story</a>
+          </div>
+        </div>
+
+        <div class="portrait-wrap reveal delay-2">
+          <div class="orbit"></div>
+          <div class="portrait">
+            <!-- Later, upload your photo to images/bhagyashri.jpg and replace this placeholder -->
+            <!-- Add this inside .portrait when your photo is uploaded:
+            <img src="images/bhagyashri.jpg" alt="Bhagyashri Sharma">
+            -->
+            <div class="portrait-placeholder">
+              <div class="symbol">✧</div>
+              <p>Your portrait will appear here</p>
+              <p>images/bhagyashri.jpg</p>
+            </div>
+            <div class="portrait-label">
+              <strong>Bhagyashri Sharma</strong>
+              <span>Creator · Designer · Founder</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-hint">SCROLL TO DISCOVER ↓</div>
+    </section>
+
+    <section id="about">
+      <div class="wrap about-grid">
+        <div class="reveal">
+          <p class="section-label">01 / The person behind the vision</p>
+          <h2>My story.<br><span class="gradient">My universe.</span></h2>
+        </div>
+        <div class="reveal delay-1">
+          <p class="section-copy">
+            I'm Bhagyashri Sharma, a creative learner from Delhi, India.
+            I enjoy exploring AI, visual storytelling, digital design and
+            website creation. I'm building my skills by turning ideas into
+            projects and learning through hands-on work.
+          </p>
+          <br>
+          <p class="section-copy">
+            My goal is to create digital experiences that feel meaningful,
+            look distinctive and connect with people. This portfolio brings
+            together my creative experiments, projects and founder initiatives.
+          </p>
+          <div class="identity-card" style="margin-top:28px">
+            <h3>A little about me</h3>
+            <p><strong>Name:</strong> Bhagyashri Sharma</p>
+            <p><strong>Age:</strong> 22 years</p>
+            <p><strong>Location:</strong> Delhi, India</p>
+            <p><strong>Education:</strong> Class 12, Arts with Economics</p>
+            <p><strong>Interests:</strong> AI creativity, design, storytelling and web experiences</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="wrap">
+        <div class="reveal">
+          <p class="section-label">02 / What I create</p>
+          <h2>Skills & <span class="gradient">capabilities.</span></h2>
+          <p class="section-copy">Creative tools and digital skills I'm developing through hands-on projects.</p>
+        </div>
+
+        <div class="skills-grid">
+          <article class="card reveal">
+            <div class="card-icon">✧</div>
+            <h3>AI Content & Storytelling</h3>
+            <p>Creative prompting, AI-assisted content, visual concepts and storytelling ideas for digital media.</p>
+            <div class="tags"><span class="tag">AI Prompts</span><span class="tag">Story Concepts</span><span class="tag">Visual Ideas</span></div>
+          </article>
+          <article class="card reveal delay-1">
+            <div class="card-icon">◈</div>
+            <h3>Visual & Graphic Design</h3>
+            <p>Social media creatives, posters, thumbnails and visual layouts using Canva and creative tools.</p>
+            <div class="tags"><span class="tag">Canva</span><span class="tag">Posters</span><span class="tag">Thumbnails</span></div>
+          </article>
+          <article class="card reveal delay-2">
+            <div class="card-icon">▶</div>
+            <h3>Video & Motion Concepts</h3>
+            <p>Creative video concepts, AI visual sequences, anime-inspired ideas and basic video editing.</p>
+            <div class="tags"><span class="tag">AI Visuals</span><span class="tag">Video Concepts</span><span class="tag">Editing</span></div>
+          </article>
+          <article class="card reveal delay-3">
+            <div class="card-icon">⌘</div>
+            <h3>Website Creation</h3>
+            <p>Building responsive website demos and learning front-end development through real projects.</p>
+            <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">WordPress</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="brands">
+      <div class="wrap">
+        <div class="reveal">
+          <p class="section-label">03 / Ideas with a purpose</p>
+          <h2>My brands.<br><span class="gradient">My vision.</span></h2>
+          <p class="section-copy">Two distinct initiatives with different creative purposes.</p>
+        </div>
+
+        <div class="brand-grid">
+          <article class="card brand-card reveal">
+            <p class="founder-tag">Founder · Creative Studio</p>
+            <div class="brand-mark">KB Studios</div>
+            <h3>Kalp Brahmand</h3>
+            <p>A creative content identity exploring motivational stories, mythology-inspired narratives, AI visuals and cinematic storytelling.</p>
+            <div class="tags"><span class="tag">Storytelling</span><span class="tag">AI Content</span><span class="tag">Motivation</span></div>
+            <a class="text-link" href="https://www.instagram.com/Kbstudioskalpbrahmand/" target="_blank" rel="noopener noreferrer">Explore KB Studios ↗</a>
+          </article>
+
+          <article class="card brand-card reveal delay-1">
+            <p class="founder-tag">Founder · Animal Welfare Initiative</p>
+            <div class="brand-mark">PAWVERSE</div>
+            <h3>Collective</h3>
+            <p>A personal animal-welfare initiative focused on compassion, street-animal awareness, feeding, care, rescue support and adoption awareness.</p>
+            <div class="tags"><span class="tag">Animal Welfare</span><span class="tag">Awareness</span><span class="tag">Compassion</span></div>
+            <a class="text-link" href="https://bhagyashreesharama-spec.github.io/pawverse/" target="_blank" rel="noopener noreferrer">Visit PAWVERSE ↗</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="work">
+      <div class="wrap">
+        <div class="reveal">
+          <p class="section-label">04 / Selected work</p>
+          <h2>Ideas made <span class="gradient">visible.</span></h2>
+          <p class="section-copy">A selection of website demos and creative projects. Each link opens the corresponding live website or platform.</p>
+        </div>
+
+        <div class="project-grid">
+          <article class="card project-card reveal">
+            <div class="card-icon">✦</div>
+            <h3>Salon & Beauty Website</h3>
+            <p>A website concept for a beauty and salon business.</p>
+            <a class="text-link" href="https://bhagyashreesharama-spec.github.io/salon-beauty-website/" target="_blank" rel="noopener noreferrer">View project ↗</a>
+          </article>
+          <article class="card project-card reveal delay-1">
+            <div class="card-icon">◈</div>
+            <h3>Restaurant & Cafe</h3>
+            <p>A web design demo for a restaurant and cafe.</p>
+            <a class="text-link" href="https://bhagyashreesharama-spec.github.io/restaurant-cafe-website/" target="_blank" rel="noopener noreferrer">View project ↗</a>
+          </article>
+          <article class="card project-card reveal delay-2">
+            <div class="card-icon">◇</div>
+            <h3>Luxe Fashion Store</h3>
+            <p>A fashion storefront concept with a premium visual direction.</p>
+            <a class="text-link" href="https://bhagyashreesharama-spec.github.io/luxe-fashion-store/" target="_blank" rel="noopener noreferrer">View project ↗</a>
+          </article>
+          <article class="card project-card reveal delay-3">
+            <div class="card-icon">⌂</div>
+            <h3>Hotel & Resort</h3>
+            <p>A hospitality website demo with an elegant presentation.</p>
+            <a class="text-link" href="https://bhagyashreesharama-spec.github.io/hotel-resort-website/" target="_blank" rel="noopener noreferrer">View project ↗</a>
+          </article>
+          <article class="card project-card reveal">
+            <div class="card-icon">↗</div>
+            <h3>Gym & Fitness</h3>
+            <p>A website concept for fitness services and membership.</p>
+            <a class="text-link" href="https://bhagyashreesharama-spec.github.io/gym-fitness-website/" target="_blank" rel="noopener noreferrer">View project ↗</a>
+          </article>
+          <article class="card project-card reveal delay-1">
+            <div class="card-icon">◎</div>
+            <h3>Wanderly Travel</h3>
+            <p>A travel website concept for destination discovery.</p>
+            <a class="text-link" href="https://bhagyashreesharama-spec.github.io/wanderly-travel/" target="_blank" rel="noopener noreferrer">View project ↗</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="wrap">
+        <div class="reveal">
+          <p class="section-label">05 / Learning by doing</p>
+          <h2>My creative <span class="gradient">journey.</span></h2>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item reveal">
+            <h3>Personal Creative Projects</h3>
+            <p>Developing website demos, visual concepts, AI-assisted content and creative work for my portfolio.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <h3>KB Studios — Kalp Brahmand</h3>
+            <p>Building a creative identity for motivational, mythology-inspired and AI-assisted storytelling content.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <h3>PAWVERSE Collective</h3>
+            <p>Developing an animal-welfare awareness initiative and its digital presence.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <h3>Volunteer Creative Support — InAmigos</h3>
+            <p>Creative contributions have included awareness content, posters, articles and video-related work.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="contact-box reveal">
+          <p class="section-label">06 / Let's create something</p>
+          <h2>Have an idea?<br><span class="gradient">Let's bring it to life.</span></h2>
+          <p class="section-copy">Open to suitable creative opportunities, collaborations and digital projects.</p>
+          <div class="actions" style="justify-content:center">
+            <a class="btn primary" href="mailto:pawversecollective@gmail.com">Email Me ↗</a>
+            <a class="btn" href="https://www.linkedin.com/in/bhagyashri-sharma-639087410/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© <span id="year"></span> Bhagyashri Sharma</span>
+    <span>Designed with imagination ✧</span>
+  </footer>
+
+  <script>
+    // Intro loader
+    window.addEventListener("load", () => {
+      setTimeout(() => document.getElementById("loader").classList.add("hide"), 650);
+    });
+
+    // Header appearance on scroll
+    const topbar = document.getElementById("topbar");
+    window.addEventListener("scroll", () => {
+      topbar.classList.toggle("scrolled", window.scrollY > 40);
+    }, { passive: true });
+
+    // Mobile navigation
+    const menuBtn = document.getElementById("menuBtn");
+    const nav = document.getElementById("nav");
+
+    menuBtn.addEventListener("click", () => {
+      const open = nav.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", String(open));
+      menuBtn.textContent = open ? "✕" : "☰";
+    });
+
+    nav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        nav.classList.remove("open");
+        menuBtn.setAttribute("aria-expanded", "false");
+        menuBtn.textContent = "☰";
+      });
+    });
+
+    // Reveal elements as they enter the viewport
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+
+    // Subtle animated star particles
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+    let width = 0;
+    let height = 0;
+    let animationId;
+
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const count = Math.min(85, Math.floor(width / 15));
+      stars = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 1.4 + .3,
+        speed: Math.random() * .22 + .04,
+        alpha: Math.random() * .55 + .15,
+        phase: Math.random() * Math.PI * 2
+      }));
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, width, height);
+      const time = performance.now() * .001;
+
+      stars.forEach(star => {
+        const alpha = star.alpha * (.6 + .4 * Math.sin(time + star.phase));
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(190, 145, 255, ${alpha})`;
+        ctx.fill();
+
+        star.y -= star.speed;
+        if (star.y < -3) {
+          star.y = height + 3;
+          star.x = Math.random() * width;
+        }
+      });
+
+      animationId = requestAnimationFrame(drawStars);
+    }
+
+    resizeCanvas();
+    drawStars();
+
+    window.addEventListener("resize", resizeCanvas);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animationId);
+      } else {
+        drawStars();
+      }
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
